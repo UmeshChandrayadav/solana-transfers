@@ -27,10 +27,10 @@ fn decode(
     program_id: &str,
     acct_idx: &[u8],
     data: &[u8],
-    keys: &[Vec<u8>],
+    keys: &[&Vec<u8>],
     owners: &HashMap<u32, String>,
 ) -> Option<Transfer> {
-    let key = |i: usize| -> Option<&Vec<u8>> { keys.get(*acct_idx.get(i)? as usize) };
+    let key = |i: usize| -> Option<&Vec<u8>> { keys.get(*acct_idx.get(i)? as usize).copied() };
 
     // Wallet owner of a token account, falling back to the token account itself
     let token_owner = |i: usize| -> Option<String> {
@@ -89,7 +89,7 @@ fn map_transfers(block: Block) -> Result<Transfers, substreams::errors::Error> {
             Some(m) => m,
             None => continue,
         };
-        let keys: &Vec<Vec<u8>> = tx.resolved_accounts();
+        let keys: Vec<&Vec<u8>> = tx.resolved_accounts();
 
         // token account index -> wallet owner
         let mut owners: HashMap<u32, String> = HashMap::new();
@@ -104,7 +104,7 @@ fn map_transfers(block: Block) -> Result<Transfers, substreams::errors::Error> {
         // 1) top-level instructions
         for ix in &msg.instructions {
             if let Some(pk) = keys.get(ix.program_id_index as usize) {
-                if let Some(t) = decode(&b58(pk), &ix.accounts, &ix.data, keys, &owners) {
+                if let Some(t) = decode(&b58(pk), &ix.accounts, &ix.data, &keys, &owners) {
                     transfers.push(t);
                 }
             }
@@ -115,7 +115,7 @@ fn map_transfers(block: Block) -> Result<Transfers, substreams::errors::Error> {
             for inner in &meta.inner_instructions {
                 for ix in &inner.instructions {
                     if let Some(pk) = keys.get(ix.program_id_index as usize) {
-                        if let Some(t) = decode(&b58(pk), &ix.accounts, &ix.data, keys, &owners) {
+                        if let Some(t) = decode(&b58(pk), &ix.accounts, &ix.data, &keys, &owners) {
                             transfers.push(t);
                         }
                     }

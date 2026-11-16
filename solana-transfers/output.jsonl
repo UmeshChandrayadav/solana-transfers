@@ -1,0 +1,3 @@
+substreams run -e solana.substreams.pinax.network:443 solana-transfers-v0.1.0.spkg map_transfers \
+  -s 385870151 -t 385870157    -o jsonl \
+| jq -c '.["@data"].transfers[]? | {from, to, amount: (.amount|tonumber)}'

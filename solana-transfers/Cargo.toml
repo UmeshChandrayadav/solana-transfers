@@ -11,6 +11,7 @@ crate-type = ["cdylib"]
 substreams = "0.6"
 substreams-solana = "0.14"
 prost = "0.13"
+prost-types = "0.13"
 bs58 = "0.5"
 
 [profile.release]

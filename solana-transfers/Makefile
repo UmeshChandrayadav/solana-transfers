@@ -11,11 +11,11 @@ build:
 
 # raw output (one JSON per block)
 run:
-	substreams run -e $(ENDPOINT) solana_transfers-v0.1.0.spkg map_transfers \
+	substreams run -e $(ENDPOINT) solana-transfers-v0.1.0.spkg map_transfers \
 	  -s $(START) -t $(STOP) -o jsonl
 
 # flat output: one {"from","to","amount"} JSON per transfer
 flat:
-	substreams run -e $(ENDPOINT) solana_transfers-v0.1.0.spkg map_transfers \
+	substreams run -e $(ENDPOINT) solana-transfers-v0.1.0.spkg map_transfers \
 	  -s $(START) -t $(STOP) -o jsonl \
 	| jq -c '.["@data"].transfers[]? | {from, to, amount: (.amount|tonumber)}'
