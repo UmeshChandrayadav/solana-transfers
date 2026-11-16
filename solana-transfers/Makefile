@@ -18,4 +18,4 @@ run:
 flat:
 	substreams run -e $(ENDPOINT) solana-transfers-v0.1.0.spkg map_transfers \
 	  -s $(START) -t $(STOP) -o jsonl \
-	| jq -c '.["@data"].transfers[]? | {from, to, amount: (.amount|tonumber)}'
+	| jq -c '.["@data"].transfers[]? | {from, to, amount: ((.amount // "0")|tonumber)}'
